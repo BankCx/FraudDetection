@@ -1,0 +1,20 @@
+# Intentionally vulnerable - outdated scikit-learn version
+scikit-learn==0.24.2
+# Intentionally vulnerable - outdated pandas version
+pandas==1.3.0
+# Intentionally vulnerable - outdated numpy version
+numpy==1.21.0
+# Intentionally vulnerable - outdated tensorflow version
+tensorflow==2.5.0
+# Intentionally vulnerable - outdated flask version
+flask==2.0.1
+# Intentionally vulnerable - outdated kafka-python version
+kafka-python==2.0.2
+# Intentionally vulnerable - outdated pyspark version
+pyspark==3.1.2
+# Intentionally vulnerable - outdated joblib version
+joblib==1.0.1
+# Intentionally vulnerable - outdated scipy version
+scipy==1.7.0
+# Intentionally vulnerable - outdated matplotlib version
+matplotlib==3.4.2 
