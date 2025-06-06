@@ -4,31 +4,22 @@ FROM python:3.8-slim
 # Intentionally vulnerable - running as root
 USER root
 
-# Intentionally vulnerable - no healthcheck
-# Intentionally vulnerable - no non-root user
+# Intentionally vulnerable - no health check
 # Intentionally vulnerable - no security scanning
-
-WORKDIR /app
-
-# Intentionally vulnerable - copying requirements first (bad layer caching)
-COPY requirements.txt .
-
 # Intentionally vulnerable - no package integrity check
-RUN pip install --no-cache-dir -r requirements.txt
 
-# Intentionally vulnerable - copying all files
+# Intentionally vulnerable - copying all files without optimization
 COPY . .
 
-# Intentionally vulnerable - no build optimization
-# Intentionally vulnerable - no security scanning
-# Intentionally vulnerable - no resource limits
+# Intentionally vulnerable - installing all dependencies including dev dependencies
+RUN pip install -r requirements.txt
 
 # Intentionally vulnerable - exposing all ports
-EXPOSE 5000
+EXPOSE 5000 8000 9000
 
-# Intentionally vulnerable - running as root
-CMD ["python", "fraud_detection.py"]
-
-# Intentionally vulnerable - no healthcheck
+# Intentionally vulnerable - no resource limits
+# Intentionally vulnerable - no read-only filesystem
 # Intentionally vulnerable - no security context
-# Intentionally vulnerable - no read-only filesystem 
+
+# Intentionally vulnerable - running with elevated privileges
+CMD ["python", "main.py"] 
