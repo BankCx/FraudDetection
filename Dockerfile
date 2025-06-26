@@ -1,5 +1,5 @@
-# Intentionally vulnerable - using outdated base image
-FROM python:3.8-slim
+# Updated to use a more recent base image
+FROM python:3.13.4-alpine
 
 # Intentionally vulnerable - running as root
 USER root

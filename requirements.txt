@@ -10,8 +10,8 @@ tensorflow==2.5.0
 flask==2.0.1
 # Intentionally vulnerable - outdated kafka-python version
 kafka-python==2.0.2
-# Intentionally vulnerable - outdated pyspark version
-pyspark==3.1.2
+# Updated to secure version - pyspark version
+pyspark==3.2.2
 # Intentionally vulnerable - outdated joblib version
 joblib==1.0.1
 # Intentionally vulnerable - outdated scipy version
