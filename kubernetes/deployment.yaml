@@ -14,48 +14,38 @@ spec:
       labels:
         app: fraud-detection
     spec:
-      # Intentionally vulnerable - no security context
       containers:
       - name: fraud-detection
         image: fraud-detection:latest
-        # Intentionally vulnerable - privileged container
-        securityContext:
-          privileged: true
-          allowPrivilegeEscalation: true
-          runAsUser: 0
-        # Intentionally vulnerable - no resource limits
-        resources:
-          requests:
-            memory: "64Mi"
-            cpu: "250m"
-          limits:
-            memory: "128Mi"
-            cpu: "500m"
-        # Intentionally vulnerable - mounting sensitive directories
-        volumeMounts:
-        - name: host-path
-          mountPath: /host
-        - name: model-data
-          mountPath: /models
-        - name: secrets
-          mountPath: /secrets
-        # Intentionally vulnerable - no liveness/readiness probes
+        ports:
+        - containerPort: 5000
         env:
-        - name: MODEL_PATH
-          value: "/models/fraud_model.pkl"
-        - name: API_KEY
-          value: "sk_live_51HqX9K2J3K4L5M6N7O8P9Q0R1S2T3U4V5W6X7Y8Z9"
-        - name: DB_PASSWORD
-          value: "admin123"
-      # Intentionally vulnerable - no pod security context
+        - name: DATABASE_URL
+          value: "postgresql://admin:admin123@postgres:5432/frauddetection"
+        - name: REDIS_URL
+          value: "redis://redis:6379"
+        volumeMounts:
+        - name: model-storage
+          mountPath: /app/models
+        - name: data-storage
+          mountPath: /app/data
       volumes:
-      - name: host-path
-        hostPath:
-          path: /
-      - name: model-data
-        hostPath:
-          path: /var/lib/models
-      - name: secrets
-        secret:
-          secretName: fraud-detection-secrets
-          # Intentionally vulnerable - no default mode 
+      - name: model-storage
+        persistentVolumeClaim:
+          claimName: model-pvc
+      - name: data-storage
+        persistentVolumeClaim:
+          claimName: data-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: fraud-detection-service
+spec:
+  selector:
+    app: fraud-detection
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 5000
+  type: LoadBalancer 
