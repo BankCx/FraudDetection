@@ -1,0 +1,66 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+.venv/
+.env
+.env.*
+
+# ML Models (if large)
+models/*.pkl
+models/*.joblib
+models/*.h5
+
+# Data
+data/
+datasets/
+*.csv
+*.json
+
+# Testing
+.pytest_cache/
+.coverage
+.tox/
+htmlcov/
+.hypothesis/
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Git
+.git/
+.gitignore
+
+# Documentation
+README.md
+*.md
+docs/
+DELIVERABLES.md
+
+# Logs
+*.log
+logs/
+
+# Kubernetes
+kubernetes/
+
+# Development
+test_*.py
+tests/

@@ -1,11 +1,20 @@
 # Bank of Checkmarx - Fraud Detection
 
-This is the fraud detection application for the intentionally vulnerable Bank of Checkmarx demo application.
+The Fraud Detection service is an advanced machine learning-powered component of the Bank of Checkmarx demo application. It provides real-time transaction analysis, risk assessment, and fraud prediction capabilities using artificial intelligence and behavioral analytics. This service is intentionally designed with security vulnerabilities for educational and demonstration purposes.
 
-## Recommended Checkmarx One Configuration
-- Criticality: 3
-- Cloud Insights: Yes
-- Internet-facing: No
+## Purpose & Overview
+
+This service acts as the intelligent guardian of the banking system, analyzing transaction patterns and user behavior to detect potentially fraudulent activities. It employs machine learning algorithms to assess transaction risk in real-time and provides actionable insights to prevent financial fraud while deliberately incorporating security vulnerabilities for educational purposes.
+
+**Key Responsibilities:**
+- Real-time fraud detection and scoring
+- Machine learning model training and inference
+- Transaction risk assessment and classification
+- Behavioral analytics and pattern recognition
+- Fraud alert generation and notification
+- Model performance monitoring and metrics
+- Integration with transaction processing systems
+- Historical analysis and reporting
 
 ## Quick Start
 
@@ -143,3 +152,8 @@ Known vulnerabilities include:
 - Weak cryptography (MD5, weak keys)
 - Hardcoded credentials
 - Insufficient input validation
+
+## Recommended Checkmarx One Configuration
+- Criticality: 3
+- Cloud Insights: Yes
+- Internet-facing: No
