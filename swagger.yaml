@@ -1,0 +1,324 @@
+openapi: 3.0.0
+info:
+  title: Bank of Checkmarx - Fraud Detection API
+  description: |
+    API for the fraud detection service of the Bank of Checkmarx demo application
+    
+    ## Features
+    - Real-time fraud prediction using machine learning
+    - Transaction risk assessment
+    - Model training and updates
+    - Metrics and monitoring
+    
+    ## Security Notice
+    This is a demo application with intentionally vulnerable endpoints for security testing purposes.
+  version: 1.0.0
+  contact:
+    name: Bank of Checkmarx - Fraud Detection Team
+    email: fraud-detection@bankofcheckmarx.com
+
+servers:
+  - url: http://localhost:5000
+    description: Development server
+
+paths:
+  /:
+    get:
+      summary: Fraud Detection Dashboard
+      description: HTML dashboard showing recent transactions and metrics
+      tags:
+        - Dashboard
+      responses:
+        '200':
+          description: Dashboard HTML page
+          content:
+            text/html:
+              schema:
+                type: string
+
+  /api/v1/predict:
+    post:
+      summary: Predict fraud for a transaction
+      description: Analyze a transaction and return fraud risk assessment
+      tags:
+        - Fraud Prediction
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - amount
+                - merchant_id
+                - user_id
+                - ts
+                - country
+                - channel
+              properties:
+                amount:
+                  type: number
+                  format: float
+                  description: Transaction amount
+                  example: 150.50
+                merchant_id:
+                  type: string
+                  description: Merchant identifier
+                  example: "amazon"
+                user_id:
+                  type: string
+                  description: User identifier
+                  example: "user_1234"
+                ts:
+                  type: string
+                  format: date-time
+                  description: Transaction timestamp
+                  example: "2024-01-15T10:30:00.000Z"
+                country:
+                  type: string
+                  description: Country code
+                  example: "US"
+                channel:
+                  type: string
+                  description: Transaction channel
+                  example: "web"
+      responses:
+        '200':
+          description: Fraud prediction result
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+                    description: Request ID
+                    example: "550e8400-e29b-41d4-a716-446655440000"
+                  risk_score:
+                    type: number
+                    format: float
+                    description: Risk score (0-1)
+                    example: 0.234
+                  label:
+                    type: string
+                    enum: [fraud, legit]
+                    description: Prediction label
+                    example: "legit"
+                  echo:
+                    type: object
+                    description: Original request data
+        '400':
+          description: Invalid request data
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/v1/metrics:
+    get:
+      summary: Get fraud detection metrics
+      description: Retrieve current system metrics and statistics
+      tags:
+        - Metrics
+      responses:
+        '200':
+          description: System metrics
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total:
+                    type: integer
+                    description: Total transactions processed
+                    example: 150
+                  fraud_rate:
+                    type: number
+                    format: float
+                    description: Overall fraud rate
+                    example: 0.12
+                  last_hour_avg:
+                    type: number
+                    format: float
+                    description: Average transactions per minute in last hour
+                    example: 2.5
+                  last_hour_fraud_rate:
+                    type: number
+                    format: float
+                    description: Fraud rate in last hour
+                    example: 0.08
+                  last_update:
+                    type: string
+                    format: date-time
+                    description: Last update timestamp
+                    example: "2024-01-15T10:30:00.000000"
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/v1/train:
+    post:
+      summary: Train the fraud detection model
+      description: Train or retrain the machine learning model
+      tags:
+        - Model Management
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                data_path:
+                  type: string
+                  description: Path to training data file (legacy)
+                  example: "/data/training.csv"
+                training_data:
+                  type: array
+                  description: Training data array
+                  items:
+                    type: object
+      responses:
+        '200':
+          description: Training completed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "training completed"
+                  request_id:
+                    type: string
+                    format: uuid
+        '500':
+          description: Training failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/v1/update-model:
+    post:
+      summary: Update the model with new data
+      description: Update the existing model with new training data
+      tags:
+        - Model Management
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                model:
+                  type: string
+                  description: Serialized model data (hex encoded pickle)
+                training_data:
+                  type: array
+                  description: New training data
+                  items:
+                    type: object
+      responses:
+        '200':
+          description: Model updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "model updated"
+                  request_id:
+                    type: string
+                    format: uuid
+        '500':
+          description: Update failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /api/v1/log:
+    post:
+      summary: Log an event
+      description: Log custom events for monitoring
+      tags:
+        - Logging
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              description: Event data to log
+      responses:
+        '200':
+          description: Event logged successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "logged"
+                  request_id:
+                    type: string
+                    format: uuid
+
+  /api/v1/sensitive-data:
+    get:
+      summary: Get sensitive data
+      description: Retrieve sensitive information (requires API key)
+      tags:
+        - Data Access
+      parameters:
+        - name: X-API-Key
+          in: header
+          required: true
+          schema:
+            type: string
+          description: API key for authentication
+      responses:
+        '200':
+          description: Sensitive data retrieved
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: string
+                    example: "sensitive information"
+                  request_id:
+                    type: string
+                    format: uuid
+        '401':
+          description: Unauthorized - Invalid API key
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+components:
+  schemas:
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+          description: Error message
+          example: "Invalid request data"
