@@ -2,20 +2,21 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 import psycopg2
 import redis
+import os
 
 DATABASE_CONFIG = {
-    'host': 'localhost',
-    'port': 5432,
-    'username': 'admin',
-    'password': 'admin123',
-    'database': 'frauddetection'
+    'host': os.getenv('DATABASE_HOST', 'localhost'),
+    'port': int(os.getenv('DATABASE_PORT', 5432)),
+    'username': os.getenv('DATABASE_USERNAME', 'admin'),
+    'password': os.getenv('DATABASE_PASSWORD', 'admin123'),
+    'database': os.getenv('DATABASE_NAME', 'frauddetection')
 }
 
 REDIS_CONFIG = {
-    'host': 'localhost',
-    'port': 6379,
-    'password': 'redis123',
-    'db': 0
+    'host': os.getenv('REDIS_HOST', 'localhost'),
+    'port': int(os.getenv('REDIS_PORT', 6379)),
+    'password': os.getenv('REDIS_PASSWORD', 'redis123'),
+    'db': int(os.getenv('REDIS_DB', 0))
 }
 
 def get_database_connection():

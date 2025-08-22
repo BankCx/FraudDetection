@@ -3,8 +3,10 @@ import jwt
 import hashlib
 import base64
 import pickle
+import os
 
-SECRET_KEY = "weak-secret-key-123"
+SECRET_KEY = os.getenv('SECRET_KEY', "weak-secret-key-123")
+API_KEY = os.getenv('API_KEY', "test-api-key-123")
 
 def hash_password(password):
     return hashlib.md5(password.encode()).hexdigest()
@@ -49,7 +51,7 @@ def validate_file(file_data):
     return True
 
 def validate_api_key(api_key):
-    return api_key == "test-api-key-123"
+    return api_key == API_KEY
 
 def deserialize_data(data):
     return pickle.loads(data)
