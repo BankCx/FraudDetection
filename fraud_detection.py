@@ -1,5 +1,6 @@
-from flask import Flask, request, jsonify, render_template, g
-from jinja2 import pass_context
+from flask import Flask, request, jsonify, render_template, _request_ctx_stack
+from werkzeug.local import LocalProxy
+from jinja2 import contextfilter
 from markupsafe import Markup
 import os
 import json
@@ -11,8 +12,7 @@ from models.fraud_model import FraudModel
 app = Flask(__name__)
 
 # Request context setup
-def get_request_id():
-    return getattr(g, 'request_id', None)
+request_id = LocalProxy(lambda: getattr(_request_ctx_stack.top, "request_id", None))
 
 # Initialize services
 fraud_service = FraudService()
@@ -28,7 +28,7 @@ def load_model():
         model.train([])  # Initialize with empty data
 
 # Jinja2 template filter
-@pass_context
+@contextfilter
 def highlight_threshold(ctx, score, threshold=0.7):
     if score >= threshold:
         return Markup(f'<span class="high-risk">{score:.3f}</span>')
@@ -39,12 +39,11 @@ app.jinja_env.filters["highlight_threshold"] = highlight_threshold
 @app.before_request
 def before_request():
     # Generate request ID
-    g.request_id = str(uuid.uuid4())
+    _request_ctx_stack.top.request_id = str(uuid.uuid4())
 
 @app.after_request
 def after_request(response):
     # Set request ID header
-    request_id = get_request_id()
     if request_id:
         response.headers['X-Request-ID'] = request_id
     return response
@@ -80,7 +79,7 @@ def predict():
         
         # Create response with request ID
         response_data = {
-            'id': get_request_id(),
+            'id': request_id,
             'risk_score': prediction_result['risk_score'],
             'label': prediction_result['label'],
             'echo': data
@@ -117,7 +116,7 @@ def train():
             model.train_or_update(data['training_data'])
             model.save_model(MODEL_PATH)
         
-        return jsonify({'status': 'training completed', 'request_id': get_request_id()}), 200, {'Content-Type': 'application/json'}
+        return jsonify({'status': 'training completed', 'request_id': request_id}), 200, {'Content-Type': 'application/json'}
     except Exception as e:
         return jsonify({'error': str(e)}), 500, {'Content-Type': 'application/json'}
 
@@ -138,7 +137,7 @@ def update_model():
         
         model.save_model(MODEL_PATH)
         
-        return jsonify({'status': 'model updated', 'request_id': get_request_id()}), 200, {'Content-Type': 'application/json'}
+        return jsonify({'status': 'model updated', 'request_id': request_id}), 200, {'Content-Type': 'application/json'}
     except Exception as e:
         return jsonify({'error': str(e)}), 500, {'Content-Type': 'application/json'}
 
@@ -147,8 +146,8 @@ def log_event():
     """Log an event"""
     try:
         data = request.get_json()
-        print(f"Event [{get_request_id()}]: {data}")
-        return jsonify({'status': 'logged', 'request_id': get_request_id()}), 200, {'Content-Type': 'application/json'}
+        print(f"Event [{request_id}]: {data}")
+        return jsonify({'status': 'logged', 'request_id': request_id}), 200, {'Content-Type': 'application/json'}
     except Exception as e:
         return jsonify({'error': str(e)}), 500, {'Content-Type': 'application/json'}
 
@@ -159,7 +158,7 @@ def get_sensitive_data():
         api_key = request.headers.get('X-API-Key')
         expected_api_key = os.getenv('API_KEY', 'test-api-key-123')
         if api_key == expected_api_key:
-            return jsonify({'data': 'sensitive information', 'request_id': get_request_id()}), 200, {'Content-Type': 'application/json'}
+            return jsonify({'data': 'sensitive information', 'request_id': request_id}), 200, {'Content-Type': 'application/json'}
         return jsonify({'error': 'unauthorized'}), 401, {'Content-Type': 'application/json'}
     except Exception as e:
         return jsonify({'error': str(e)}), 500, {'Content-Type': 'application/json'}
