@@ -88,6 +88,44 @@ Response:
 }
 ```
 
+### External Fraud Assessment
+```bash
+curl -X POST http://localhost:5000/api/v1/external-assessment \
+  -H "Content-Type: application/json" \
+  -d '{
+    "amount": 500.00,
+    "merchant_id": "suspicious_store",
+    "user_id": "user_123",
+    "country": "US",
+    "channel": "mobile"
+  }'
+```
+
+### Send Manual Fraud Alert
+```bash
+curl -X POST http://localhost:5000/api/v1/send-alert \
+  -H "Content-Type: application/json" \
+  -d '{
+    "transaction_data": {
+      "amount": 1000.00,
+      "merchant_id": "test_merchant",
+      "user_id": "user_456"
+    },
+    "risk_score": 0.85,
+    "alert_config": {
+      "email_enabled": true,
+      "email_addresses": ["security@example.com"],
+      "slack_enabled": true,
+      "slack_channels": ["#fraud-alerts"]
+    }
+  }'
+```
+
+### Check Fraud Provider Status
+```bash
+curl http://localhost:5000/api/v1/fraud-providers
+```
+
 ## Kafka Integration
 
 ### Start Consumer
@@ -121,6 +159,13 @@ python kafka_producer.py --count 50 --fraud-ratio 0.3 --interval 2.0
 | `REDIS_PASSWORD` | Redis password | `redis123` |
 | `SECRET_KEY` | JWT secret key | `weak-secret-key-123` |
 | `API_KEY` | API key for sensitive endpoints | `test-api-key-123` |
+| `FRAUD_SCORE_API_KEY` | External fraud scoring API key | `fs_live_sk_1234567890abcdef` |
+| `RISK_INTEL_SECRET` | Risk intelligence API secret | `ri_secret_98765fedcba0987654321` |
+| `SIFT_SCIENCE_API_KEY` | Sift Science API key | `your_sift_api_key_here` |
+| `TWILIO_AUTH_TOKEN` | Twilio SMS service auth token | `twilio_auth_token_1234567890abcdef` |
+| `TWILIO_ACCOUNT_SID` | Twilio account SID | `ACabcdef1234567890abcdef1234567890` |
+| `SENDGRID_API_KEY` | SendGrid email service API key | `SG.1234567890abcdef.1234567890abcdef123456789` |
+| `SLACK_WEBHOOK_SECRET` | Slack webhook token for alerts | `xoxb-1234567890-1234567890-abcdef1234567890` |
 
 ## Architecture
 
