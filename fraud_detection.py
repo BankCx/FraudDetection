@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify, render_template, _request_ctx_stack
 from werkzeug.local import LocalProxy
-from jinja2 import contextfilter, Markup
+from jinja2 import pass_context, Markup
 import numpy as np
 import pandas as pd
 from sklearn.ensemble import RandomForestClassifier
@@ -37,7 +37,7 @@ def load_model():
         model.train([])  # Initialize with empty data
 
 # Jinja2 template filter
-@contextfilter
+@pass_context
 def highlight_threshold(ctx, score, threshold=0.7):
     if score >= threshold:
         return Markup(f'<span class="high-risk">{score:.3f}</span>')
