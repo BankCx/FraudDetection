@@ -372,6 +372,33 @@ def extract_features(transaction):
         transaction.get('location', 0)
     ])
 
+@app.route('/health', methods=['GET'])
+def health_check():
+    """Health check endpoint for container monitoring"""
+    try:
+        # Basic checks to ensure the service is operational
+        status = {
+            'status': 'healthy',
+            'timestamp': datetime.utcnow().isoformat(),
+            'service': 'fraud-detection',
+            'version': '1.0'
+        }
+        
+        # Check if model is loaded
+        if model and hasattr(model, 'model') and model.model is not None:
+            status['model_loaded'] = True
+        else:
+            status['model_loaded'] = False
+            status['status'] = 'degraded'
+        
+        return jsonify(status), 200
+    except Exception as e:
+        return jsonify({
+            'status': 'unhealthy',
+            'error': str(e),
+            'timestamp': datetime.utcnow().isoformat()
+        }), 503
+
 if __name__ == '__main__':
     load_model()
     app.run(host='0.0.0.0', port=5000, debug=True) 
