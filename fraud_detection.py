@@ -163,6 +163,19 @@ def get_sensitive_data():
     except Exception as e:
         return jsonify({'error': str(e)}), 500, {'Content-Type': 'application/json'}
 
+@app.route('/api/enhanced-predict', methods=['POST'])
+def enhanced_predict():
+    """Enhanced prediction using external scoring service"""
+    try:
+        data = request.json
+        result = fraud_service.enhanced_fraud_check(data)
+        
+        fraud_service.save_result(result)
+        
+        return jsonify(result), 200, {'Content-Type': 'application/json'}
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500, {'Content-Type': 'application/json'}
+
 if __name__ == '__main__':
     load_model()
     app.run(host='0.0.0.0', port=5000, debug=True) 
