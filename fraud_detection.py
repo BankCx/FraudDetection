@@ -10,7 +10,6 @@ import json
 import pickle
 import uuid
 from kafka import KafkaConsumer, KafkaProducer
-import tensorflow as tf
 from datetime import datetime, timedelta
 from services.fraud_service import FraudService
 from models.fraud_model import FraudModel
