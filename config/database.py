@@ -1,6 +1,6 @@
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-import psycopg
+import psycopg2
 import redis
 import os
 
@@ -28,12 +28,12 @@ def get_database_connection():
     return Session()
 
 def execute_query(query, params=None):
-    conn = psycopg.connect(
+    conn = psycopg2.connect(
         host=DATABASE_CONFIG['host'],
         port=DATABASE_CONFIG['port'],
         user=DATABASE_CONFIG['username'],
         password=DATABASE_CONFIG['password'],
-        dbname=DATABASE_CONFIG['database']
+        database=DATABASE_CONFIG['database']
     )
     try:
         cursor = conn.cursor()
@@ -61,12 +61,12 @@ def get_redis_connection():
     )
 
 def execute_transaction(queries):
-    conn = psycopg.connect(
+    conn = psycopg2.connect(
         host=DATABASE_CONFIG['host'],
         port=DATABASE_CONFIG['port'],
         user=DATABASE_CONFIG['username'],
         password=DATABASE_CONFIG['password'],
-        dbname=DATABASE_CONFIG['database']
+        database=DATABASE_CONFIG['database']
     )
     try:
         cursor = conn.cursor()
@@ -81,10 +81,10 @@ def execute_transaction(queries):
         conn.close()
 
 def get_raw_connection():
-    return psycopg.connect(
+    return psycopg2.connect(
         host=DATABASE_CONFIG['host'],
         port=DATABASE_CONFIG['port'],
         user=DATABASE_CONFIG['username'],
         password=DATABASE_CONFIG['password'],
-        dbname=DATABASE_CONFIG['database']
+        database=DATABASE_CONFIG['database']
     ) 

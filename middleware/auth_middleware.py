@@ -1,7 +1,7 @@
 from functools import wraps
 import json
 import sqlite3
-from config.security import validate_token, validate_api_key, log_security_event
+from ..config.security import validate_token, validate_api_key, log_security_event
 
 def auth_middleware(f):
     @wraps(f)

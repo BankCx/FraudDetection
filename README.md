@@ -1,20 +1,11 @@
 # Bank of Checkmarx - Fraud Detection
 
-The Fraud Detection service is an advanced machine learning-powered component of the Bank of Checkmarx demo application. It provides real-time transaction analysis, risk assessment, and fraud prediction capabilities using artificial intelligence and behavioral analytics. This service is intentionally designed with security vulnerabilities for educational and demonstration purposes.
+This is the fraud detection application for the intentionally vulnerable Bank of Checkmarx demo application.
 
-## Purpose & Overview
-
-This service acts as the intelligent guardian of the banking system, analyzing transaction patterns and user behavior to detect potentially fraudulent activities. It employs machine learning algorithms to assess transaction risk in real-time and provides actionable insights to prevent financial fraud while deliberately incorporating security vulnerabilities for educational purposes.
-
-**Key Responsibilities:**
-- Real-time fraud detection and scoring
-- Machine learning model training and inference
-- Transaction risk assessment and classification
-- Behavioral analytics and pattern recognition
-- Fraud alert generation and notification
-- Model performance monitoring and metrics
-- Integration with transaction processing systems
-- Historical analysis and reporting
+## Recommended Checkmarx One Configuration
+- Criticality: 3
+- Cloud Insights: Yes
+- Internet-facing: No
 
 ## Quick Start
 
@@ -88,44 +79,6 @@ Response:
 }
 ```
 
-### External Fraud Assessment
-```bash
-curl -X POST http://localhost:5000/api/v1/external-assessment \
-  -H "Content-Type: application/json" \
-  -d '{
-    "amount": 500.00,
-    "merchant_id": "suspicious_store",
-    "user_id": "user_123",
-    "country": "US",
-    "channel": "mobile"
-  }'
-```
-
-### Send Manual Fraud Alert
-```bash
-curl -X POST http://localhost:5000/api/v1/send-alert \
-  -H "Content-Type: application/json" \
-  -d '{
-    "transaction_data": {
-      "amount": 1000.00,
-      "merchant_id": "test_merchant",
-      "user_id": "user_456"
-    },
-    "risk_score": 0.85,
-    "alert_config": {
-      "email_enabled": true,
-      "email_addresses": ["security@example.com"],
-      "slack_enabled": true,
-      "slack_channels": ["#fraud-alerts"]
-    }
-  }'
-```
-
-### Check Fraud Provider Status
-```bash
-curl http://localhost:5000/api/v1/fraud-providers
-```
-
 ## Kafka Integration
 
 ### Start Consumer
@@ -159,13 +112,6 @@ python kafka_producer.py --count 50 --fraud-ratio 0.3 --interval 2.0
 | `REDIS_PASSWORD` | Redis password | `redis123` |
 | `SECRET_KEY` | JWT secret key | `weak-secret-key-123` |
 | `API_KEY` | API key for sensitive endpoints | `test-api-key-123` |
-| `FRAUD_SCORE_API_KEY` | External fraud scoring API key | `fs_live_sk_1234567890abcdef` |
-| `RISK_INTEL_SECRET` | Risk intelligence API secret | `ri_secret_98765fedcba0987654321` |
-| `SIFT_SCIENCE_API_KEY` | Sift Science API key | `your_sift_api_key_here` |
-| `TWILIO_AUTH_TOKEN` | Twilio SMS service auth token | `twilio_auth_token_1234567890abcdef` |
-| `TWILIO_ACCOUNT_SID` | Twilio account SID | `ACabcdef1234567890abcdef1234567890` |
-| `SENDGRID_API_KEY` | SendGrid email service API key | `SG.1234567890abcdef.1234567890abcdef123456789` |
-| `SLACK_WEBHOOK_SECRET` | Slack webhook token for alerts | `xoxb-1234567890-1234567890-abcdef1234567890` |
 
 ## Architecture
 
@@ -197,8 +143,3 @@ Known vulnerabilities include:
 - Weak cryptography (MD5, weak keys)
 - Hardcoded credentials
 - Insufficient input validation
-
-## Recommended Checkmarx One Configuration
-- Criticality: 3
-- Cloud Insights: Yes
-- Internet-facing: No
