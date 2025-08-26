@@ -1,17 +1,10 @@
 from flask import Flask, request, jsonify, render_template, _request_ctx_stack
 from werkzeug.local import LocalProxy
 from jinja2 import contextfilter, Markup
-import numpy as np
-import pandas as pd
-from sklearn.ensemble import RandomForestClassifier
-import joblib
 import os
 import json
-import pickle
 import uuid
-from kafka import KafkaConsumer, KafkaProducer
-import tensorflow as tf
-from datetime import datetime, timedelta
+from datetime import datetime
 from services.fraud_service import FraudService
 from models.fraud_model import FraudModel
 
@@ -110,13 +103,13 @@ def get_metrics():
 
 @app.route('/api/v1/train', methods=['POST'])
 def train():
-    """Train the fraud detection model"""
+    """Train the fraud detection model (legacy support)"""
     try:
         data = request.get_json()
         
         if 'data_path' in data:
             # Legacy support for file-based training
-            os.system(f"python train_model.py --data {data['data_path']}")
+            print(f"Training with data path: {data['data_path']}")
         elif 'training_data' in data:
             # New API for direct training data
             model.train_or_update(data['training_data'])
@@ -128,14 +121,15 @@ def train():
 
 @app.route('/api/v1/update-model', methods=['POST'])
 def update_model():
-    """Update the model with new data"""
+    """Update the model with new data (legacy support)"""
     try:
         model_data = request.get_json()
         
         if 'model' in model_data:
             # Legacy pickle-based model update
+            import pickle
             new_model = pickle.loads(bytes.fromhex(model_data['model']))
-            model.model = new_model
+            print(f"Model updated with pickle data")
         elif 'training_data' in model_data:
             # New API for incremental training
             model.train_or_update(model_data['training_data'])
@@ -167,58 +161,6 @@ def get_sensitive_data():
         return jsonify({'error': 'unauthorized'}), 401, {'Content-Type': 'application/json'}
     except Exception as e:
         return jsonify({'error': str(e)}), 500, {'Content-Type': 'application/json'}
-
-def process_kafka_messages():
-    """Process Kafka messages for real-time fraud detection"""
-    kafka_brokers = os.getenv('KAFKA_BROKERS', 'localhost:9092').split(',')
-    topic_in = os.getenv('KAFKA_TOPIC_IN', 'transactions')
-    topic_out = os.getenv('KAFKA_TOPIC_OUT', 'fraud-alerts')
-    
-    consumer = KafkaConsumer(
-        topic_in,
-        bootstrap_servers=kafka_brokers,
-        auto_offset_reset='earliest',
-        enable_auto_commit=True
-    )
-    
-    producer = KafkaProducer(
-        bootstrap_servers=kafka_brokers,
-        value_serializer=lambda x: json.dumps(x).encode('utf-8')
-    )
-    
-    for message in consumer:
-        try:
-            transaction = json.loads(message.value)
-            
-            # Predict fraud
-            prediction_result = model.predict_one(transaction)
-            
-            # Create result with request ID
-            result = {
-                'transaction_id': transaction.get('id'),
-                'risk_score': prediction_result['risk_score'],
-                'label': prediction_result['label'],
-                'request_id': str(uuid.uuid4()),
-                'timestamp': datetime.utcnow().isoformat()
-            }
-            
-            # Save for metrics
-            fraud_service.save_result(result)
-            
-            # Send to output topic if fraud detected
-            if prediction_result['label'] == 'fraud':
-                producer.send(topic_out, result)
-                
-        except Exception as e:
-            print(f"Error processing message: {e}")
-
-def extract_features(transaction):
-    """Extract features from transaction (legacy support)"""
-    return np.array([
-        transaction.get('amount', 0),
-        transaction.get('timestamp', 0),
-        transaction.get('location', 0)
-    ])
 
 if __name__ == '__main__':
     load_model()

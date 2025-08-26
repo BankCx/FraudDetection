@@ -99,6 +99,32 @@ def test_sensitive_data():
         print(f"Error: {e}")
         return False
 
+def test_train_endpoint():
+    """Test the train endpoint (legacy support)"""
+    print("\nTesting /api/v1/train...")
+    
+    try:
+        training_data = {
+            "training_data": [
+                {"amount": 100, "merchant_id": "test", "user_id": "user1", "ts": "2024-01-01T00:00:00Z", "country": "US", "channel": "web", "is_fraud": False}
+            ]
+        }
+        
+        response = requests.post(
+            f"{BASE_URL}/api/v1/train",
+            json=training_data,
+            headers={"Content-Type": "application/json"}
+        )
+        
+        print(f"Status Code: {response.status_code}")
+        print(f"Response Body: {json.dumps(response.json(), indent=2)}")
+        
+        return response.status_code == 200
+        
+    except Exception as e:
+        print(f"Error: {e}")
+        return False
+
 def main():
     """Run all tests"""
     print("Fraud Detection API Test Suite")
@@ -108,7 +134,8 @@ def main():
         ("Predict", test_predict),
         ("Metrics", test_metrics),
         ("Dashboard", test_dashboard),
-        ("Sensitive Data", test_sensitive_data)
+        ("Sensitive Data", test_sensitive_data),
+        ("Train", test_train_endpoint)
     ]
     
     results = []

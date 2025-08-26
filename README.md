@@ -1,6 +1,6 @@
-# Bank of Checkmarx - Fraud Detection
+# Bank of Checkmarx - Fraud Detection (Simplified)
 
-This is the fraud detection application for the intentionally vulnerable Bank of Checkmarx demo application.
+This is the simplified fraud detection application for the intentionally vulnerable Bank of Checkmarx demo application.
 
 ## Recommended Checkmarx One Configuration
 - Criticality: 3
@@ -79,37 +79,15 @@ Response:
 }
 ```
 
-## Kafka Integration
-
-### Start Consumer
-```bash
-python kafka_consumer.py
-```
-
-### Send Sample Transactions
-```bash
-# Send 10 transactions with 20% fraud ratio
-python kafka_producer.py --count 10 --fraud-ratio 0.2
-
-# Send 50 transactions with 30% fraud ratio, 2 second intervals
-python kafka_producer.py --count 50 --fraud-ratio 0.3 --interval 2.0
-```
-
 ## Environment Variables
 
 | Variable | Description | Default |
 |----------|-------------|---------|
-| `KAFKA_BROKERS` | Kafka broker addresses | `localhost:9092` |
-| `KAFKA_TOPIC_IN` | Input topic for transactions | `transactions` |
-| `KAFKA_TOPIC_OUT` | Output topic for fraud alerts | `fraud-alerts` |
 | `DATABASE_HOST` | PostgreSQL host | `localhost` |
 | `DATABASE_PORT` | PostgreSQL port | `5432` |
 | `DATABASE_USERNAME` | Database username | `admin` |
 | `DATABASE_PASSWORD` | Database password | `admin123` |
 | `DATABASE_NAME` | Database name | `frauddetection` |
-| `REDIS_HOST` | Redis host | `localhost` |
-| `REDIS_PORT` | Redis port | `6379` |
-| `REDIS_PASSWORD` | Redis password | `redis123` |
 | `SECRET_KEY` | JWT secret key | `weak-secret-key-123` |
 | `API_KEY` | API key for sensitive endpoints | `test-api-key-123` |
 
@@ -117,20 +95,22 @@ python kafka_producer.py --count 50 --fraud-ratio 0.3 --interval 2.0
 
 - **Main Application** (`fraud_detection.py`): Flask app with REST API endpoints
 - **Service Layer** (`services/fraud_service.py`): Business logic and metrics tracking
-- **Model Layer** (`models/fraud_model.py`): ML model wrapper with scikit-learn
+- **Model Layer** (`models/fraud_model.py`): Rule-based fraud detection
 - **Configuration** (`config/`): Database and security settings
 - **Middleware** (`middleware/auth_middleware.py`): Authentication and logging
-- **Infrastructure** (`kubernetes/`, `Dockerfile`): Deployment configuration
+- **Infrastructure** (`Dockerfile`): Simple container deployment
 
 ## Features
 
-- Real-time fraud detection using machine learning
+- Rule-based fraud detection (simplified from ML)
 - REST API with request ID tracking
 - HTML dashboard with live metrics
-- Kafka integration for stream processing
 - In-memory metrics and recent results tracking
 - Jinja2 template filtering for risk highlighting
 - Comprehensive error handling and logging
+- JWT token validation
+- API key authentication
+- PostgreSQL database integration (for SQL injection demo)
 
 ## Security Notes
 
@@ -138,8 +118,32 @@ python kafka_producer.py --count 50 --fraud-ratio 0.3 --interval 2.0
 
 Known vulnerabilities include:
 - SQL injection in database queries
-- Command injection in training endpoint
 - Unsafe pickle deserialization
 - Weak cryptography (MD5, weak keys)
 - Hardcoded credentials
 - Insufficient input validation
+
+## Simplification Changes
+
+This application has been simplified from the original version:
+
+### Removed Components:
+- Kafka messaging system
+- Machine learning libraries (scikit-learn, TensorFlow, pandas, numpy)
+- Redis caching
+- Complex model training/retraining
+- Kubernetes orchestration
+- Multiple database systems
+
+### Retained Components:
+- Core Flask web application
+- Rule-based fraud detection
+- JWT authentication
+- PostgreSQL database (for vulnerability demo)
+- Docker containerization
+- Basic security features
+
+### Dependencies Reduced:
+- From 13 packages to 6 packages
+- 54% reduction in external dependencies
+- Simplified deployment and maintenance
