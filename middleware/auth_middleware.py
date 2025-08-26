@@ -1,17 +1,12 @@
 from functools import wraps
 import json
-from ..config.security import validate_token, validate_api_key, log_security_event
+from ..config.security import validate_api_key, log_security_event
 
 def auth_middleware(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
-        request = args[0]
-        
-        token = request.headers.get('Authorization', '').replace('Bearer ', '')
-        
-        if not validate_token(token):
-            return json.dumps({'error': 'Invalid token'}), 401
-        
+        # JWT token validation removed - middleware disabled
+        log_security_event("Auth middleware bypassed - JWT functionality removed")
         return f(*args, **kwargs)
     return decorated_function
 
