@@ -1,8 +1,8 @@
 from datetime import datetime, timedelta
 import json
 from collections import deque
-from ..models.fraud_model import FraudModel
-from ..config.security import log_security_event
+from models.fraud_model import FraudModel
+from config.security import log_security_event
 
 class FraudService:
     def __init__(self):
