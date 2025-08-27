@@ -63,7 +63,7 @@ def predict():
     """Predict fraud for a transaction"""
     try:
         data = request.get_json()
-        
+         
         # Validate required fields
         required_fields = ['amount', 'merchant_id', 'user_id', 'ts', 'country', 'channel']
         for field in required_fields:
@@ -74,15 +74,15 @@ def predict():
         if not isinstance(data['amount'], (int, float)):
             return jsonify({'error': 'amount must be a number'}), 400
         
-        # Call model prediction
+        # Call model prediction with validated data
         prediction_result = model.predict_one(data)
         
-        # Create response with request ID
+        # Create response with request ID - REMOVE ECHO FIELD to prevent XSS
         response_data = {
             'id': request_id,
             'risk_score': prediction_result['risk_score'],
-            'label': prediction_result['label'],
-            'echo': data
+            'label': prediction_result['label']
+            # Removed 'echo': data to prevent XSS vulnerability
         }
         
         # Save result for metrics
