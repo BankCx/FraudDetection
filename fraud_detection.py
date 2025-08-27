@@ -74,29 +74,15 @@ def predict():
         if not isinstance(data['amount'], (int, float)):
             return jsonify({'error': 'amount must be a number'}), 400
         
-        # Sanitize string inputs to prevent XSS
-        string_fields = ['merchant_id', 'user_id', 'country', 'channel']
-        sanitized_data = {}
-        for key, value in data.items():
-            if key in string_fields:
-                # Convert to string and escape HTML special characters
-                if isinstance(value, str):
-                    sanitized_value = value.replace('<', '&lt;').replace('>', '&gt;').replace('"', '&quot;').replace("'", '&#x27;').replace('&', '&amp;')
-                    sanitized_data[key] = sanitized_value
-                else:
-                    sanitized_data[key] = str(value).replace('<', '&lt;').replace('>', '&gt;').replace('"', '&quot;').replace("'", '&#x27;').replace('&', '&amp;')
-            else:
-                sanitized_data[key] = value
+        # Call model prediction with validated data
+        prediction_result = model.predict_one(data)
         
-        # Call model prediction with sanitized data
-        prediction_result = model.predict_one(sanitized_data)
-        
-        # Create response with request ID
+        # Create response with request ID - REMOVE ECHO FIELD to prevent XSS
         response_data = {
             'id': request_id,
             'risk_score': prediction_result['risk_score'],
-            'label': prediction_result['label'],
-            'echo': sanitized_data  # Use sanitized data instead of raw input
+            'label': prediction_result['label']
+            # Removed 'echo': data to prevent XSS vulnerability
         }
         
         # Save result for metrics
