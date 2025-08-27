@@ -63,7 +63,7 @@ def predict():
     """Predict fraud for a transaction"""
     try:
         data = request.get_json()
-        
+         
         # Validate required fields
         required_fields = ['amount', 'merchant_id', 'user_id', 'ts', 'country', 'channel']
         for field in required_fields:
@@ -74,15 +74,29 @@ def predict():
         if not isinstance(data['amount'], (int, float)):
             return jsonify({'error': 'amount must be a number'}), 400
         
-        # Call model prediction
-        prediction_result = model.predict_one(data)
+        # Sanitize string inputs to prevent XSS
+        string_fields = ['merchant_id', 'user_id', 'country', 'channel']
+        sanitized_data = {}
+        for key, value in data.items():
+            if key in string_fields:
+                # Convert to string and escape HTML special characters
+                if isinstance(value, str):
+                    sanitized_value = value.replace('<', '&lt;').replace('>', '&gt;').replace('"', '&quot;').replace("'", '&#x27;').replace('&', '&amp;')
+                    sanitized_data[key] = sanitized_value
+                else:
+                    sanitized_data[key] = str(value).replace('<', '&lt;').replace('>', '&gt;').replace('"', '&quot;').replace("'", '&#x27;').replace('&', '&amp;')
+            else:
+                sanitized_data[key] = value
+        
+        # Call model prediction with sanitized data
+        prediction_result = model.predict_one(sanitized_data)
         
         # Create response with request ID
         response_data = {
             'id': request_id,
             'risk_score': prediction_result['risk_score'],
             'label': prediction_result['label'],
-            'echo': data
+            'echo': sanitized_data  # Use sanitized data instead of raw input
         }
         
         # Save result for metrics
