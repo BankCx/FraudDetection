@@ -14,11 +14,9 @@ def validate_api_key(api_key):
     return api_key == API_KEY
 
 def deserialize_data(data):
-    # Keep unsafe pickle for vulnerability demo
     import pickle
     return pickle.loads(data)
 
 def serialize_data(data):
-    # Keep unsafe pickle for vulnerability demo
     import pickle
     return pickle.dumps(data) 
