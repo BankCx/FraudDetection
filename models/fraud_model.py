@@ -11,8 +11,8 @@ class FraudModel:
         """Load a trained model from file (legacy support)"""
         if os.path.exists(model_path):
             try:
-                with open(model_path, 'rb') as f:
-                    self.model = pickle.load(f)
+                with open(model_path, 'rb') as mp:
+                    self.model = pickle.load(mp)
             except:
                 # If pickle fails, use default model
                 self.model = None
@@ -24,8 +24,8 @@ class FraudModel:
             'threshold': self.threshold,
             'version': 'rule-based-v1'
         }
-        with open(model_path, 'wb') as f:
-            pickle.dump(model_data, f)
+        with open(model_path, 'wb') as mp:
+            pickle.dump(model_data, mp)
 
     def extract_features(self, transaction):
         """Extract features from transaction data"""
@@ -126,14 +126,14 @@ class FraudModel:
             'version': 'rule-based-v1',
             'type': 'rule-based'
         }
-        with open(file_path, 'wb') as f:
-            pickle.dump(model_data, f)
+        with open(file_path, 'wb') as fp:
+            pickle.dump(model_data, fp)
 
     def import_model(self, file_path):
         """Import model with metadata (legacy support)"""
         try:
-            with open(file_path, 'rb') as f:
-                model_data = pickle.load(f)
+            with open(file_path, 'rb') as fp:
+                model_data = pickle.load(fp)
                 self.threshold = model_data.get('threshold', 0.7)
         except:
             # Use default if import fails
