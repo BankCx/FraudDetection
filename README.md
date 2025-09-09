@@ -26,6 +26,6 @@ The Fraud Detection service is a Flask application that provides rule-based frau
 ## Technology Stack
 
 - **Python 3.8+**: Programming language
-- **Flask 2.0.1**: Web framework
+- **Flask 1.1.4**: Web framework
 - **Werkzeug 1.0.1**: WSGI utilities
-- **Jinja2 3.0.1**: Template engine for dashboard
+- **Jinja2 2.11.3**: Template engine for dashboard
